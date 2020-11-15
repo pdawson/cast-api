@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\InteractsWithSettings;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Server extends Model
 {
     use HasFactory;
+    use InteractsWithSettings;
 
     /**
      * Attributes for mass assignment
