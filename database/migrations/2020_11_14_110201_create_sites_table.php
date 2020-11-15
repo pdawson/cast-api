@@ -19,6 +19,9 @@ class CreateSitesTable extends Migration
             // A site belongs to a domain (host)
             $table->unsignedBigInteger('server_id');
 
+            // A site can have a preset
+            $table->unsignedBigInteger('preset_id')->nullable();
+
             // The domain name for the site (e.g. test.pauldawson.me)
             $table->string('domain');
 
@@ -38,6 +41,11 @@ class CreateSitesTable extends Migration
                 ->references('id')
                 ->on('servers')
                 ->cascadeOnDelete();
+
+            $table->foreign('preset_id')
+                ->references('id')
+                ->on('presets')
+                ->nullOnDelete();
         });
     }
 

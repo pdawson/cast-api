@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ServerSeeder::class,
             SiteSeeder::class,
+            SettingSeeder::class,
+            PresetSeeder::class,
         ]);
         // \App\Models\User::factory(10)->create();
     }

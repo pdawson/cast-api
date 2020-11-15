@@ -21,7 +21,11 @@ class CreatePresetsTable extends Migration
             // The name of the preset
             $table->string('name');
 
+            // The template filename (null means default)
+            $table->string('template')->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
