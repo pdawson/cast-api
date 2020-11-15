@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ServerRequest;
 use App\Http\Resources\ServerResource;
+use App\Http\Resources\SettingValueResource;
 use App\Models\Server;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -26,14 +27,19 @@ class ServerController extends ResourceController
     }
 
     /**
-     * Returns a JsonResource for the entity
+     * Returns a JSON response for the single entity
      *
      * @param Server $model
-     * @return JsonResource
+     * @return JsonResponse
      */
-    public function show(Server $model): JsonResource
+    public function show(Server $model): JsonResponse
     {
-        return ServerResource::make($model);
+        ServerResource::withoutWrapping();
+
+        return response()->json([
+            'server' => ServerResource::make($model),
+            'settings' => SettingValueResource::collection($model->settings),
+        ]);
     }
 
     /**
