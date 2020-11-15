@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -13,6 +15,8 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-//Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-//    return (int) $user->id === (int) $id;
-//});
+// Global channel, for everyone
+Broadcast::channel('global', fn() => true);
+
+// Per user channel
+Broadcast::channel('user.{id}', fn($user, $id) => (int)$user->id === (int)$id);

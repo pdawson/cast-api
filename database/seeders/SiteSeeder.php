@@ -18,8 +18,8 @@ class SiteSeeder extends Seeder
     public function run(): void
     {
         $dev = Server::where('hostname', 'pauld.dev')->first();
-        $this->createSite($dev, 'pauld.dev', 'Development', 'pauld.dev');
-        $this->createSite($dev, 'test.pauld.dev', 'Testing', 'test.pauld.dev');
+        $this->createSite($dev, 'pauld.dev', 'Development', 'pauld.dev', 'public');
+        $this->createSite($dev, 'test.pauld.dev', 'Testing', 'test.pauld.dev', 'public');
 
         $production = Server::where('hostname', 'pauldawson.me')->first();
         $this->createSite($production, 'pauldawson.me', 'Portfolio', 'pauldawson.me');
@@ -32,6 +32,7 @@ class SiteSeeder extends Seeder
      * @param string $domain
      * @param string $name
      * @param string|null $path
+     * @param string|null $public_path
      * @param bool|null $active
      * @return Site|null
      */
@@ -40,6 +41,7 @@ class SiteSeeder extends Seeder
         string $domain,
         string $name,
         ?string $path = null,
+        ?string $public_path = null,
         ?bool $active = null
     ): ?Site {
         if ($server === null) {
@@ -51,7 +53,7 @@ class SiteSeeder extends Seeder
 
         return Site::updateOrCreate(
             ['server_id' => $server->id, 'domain' => $domain],
-            compact('name', 'path', 'active')
+            compact('name', 'path', 'public_path', 'active')
         );
     }
 }

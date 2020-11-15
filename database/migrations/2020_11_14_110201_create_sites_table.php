@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -28,8 +30,11 @@ class CreateSitesTable extends Migration
             // The name of the site
             $table->string('name');
 
-            // The path relative to the domains www path
+            // The path relative to the domains www path (e.g. 'pauld.dev')
             $table->string('path');
+
+            // The sites public path relative to the above path (e.g. 'public')
+            $table->string('public_path')->nullable();
 
             // Is the site active on the domain?
             $table->boolean('active')->default(false);
