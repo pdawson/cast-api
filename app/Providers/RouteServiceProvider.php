@@ -29,7 +29,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->routes(function () {
             // API routes that require auth
             Route::prefix('v1')
-                ->middleware('auth:api')
+                ->middleware(['api', 'auth:api'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
 
@@ -38,10 +38,6 @@ class RouteServiceProvider extends ServiceProvider
                 ->middleware('api')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/api_insecure.php'));
-
-//            Route::middleware('web')
-//                ->namespace($this->namespace)
-//                ->group(base_path('routes/web.php'));
         });
     }
 

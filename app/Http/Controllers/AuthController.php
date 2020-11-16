@@ -69,6 +69,14 @@ class AuthController extends Controller
     }
 
     /**
+     * Updates the users profile with the values from the request
+     */
+    public function updateProfile()
+    {
+        // TODO
+    }
+
+    /**
      * Logs the user out
      *
      * @return JsonResponse

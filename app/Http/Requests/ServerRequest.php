@@ -36,6 +36,9 @@ class ServerRequest extends FormRequest
                     ->ignore($this->route('server')->id),
             ],
             'path' => 'required|max:255',
+            'settings' => 'sometimes|object',
+            'settings.*.id' => 'required|exists:settings,id',
+            'settings.*.value' => 'sometimes',
         ];
     }
 }

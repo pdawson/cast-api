@@ -5,38 +5,60 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SiteRequest;
+use App\Http\Resources\SettingValueResource;
 use App\Http\Resources\SiteResource;
 use App\Models\Site;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Route;
 
 class SiteController extends ResourceController
 {
     /**
      * Returns a listing of entities
      *
+     * @param Request $request
      * @return JsonResource
      */
-    public function index(): JsonResource
+    public function index(Request $request): JsonResource
     {
-        // Todo: get the domain id from the request and show the records for the
-        // requested domain.
+        $query = Site::query();
 
-        $records = Site::query()->paginate();
+        if ($request->has('server_id')) {
+            $query->where('server_id', $request->get('server_id'));
+        }
 
-        return SiteResource::collection($records);
+        return SiteResource::collection($query->paginate());
     }
 
     /**
      * Returns a JsonResource for the entity
      *
-     * @param Site $model
-     * @return JsonResource
+     * @param Site $site
+     * @return JsonResponse
      */
-    public function show(Site $model): JsonResource
+    public function show(Site $site): JsonResponse
     {
-        return SiteResource::make($model);
+        SiteResource::withoutWrapping();
+
+        return response()->json([
+            'site' => SiteResource::make($site),
+            'settings' => SettingValueResource::collection($site->settings),
+        ]);
+    }
+
+    /**
+     * Returns a JSON response for an id => name representation of the entities records
+     *
+     * @return JsonResponse
+     */
+    public function list(): JsonResponse
+    {
+        $records = Site::query()->pluck('name', 'id');
+
+        return response()->json(['sites' => $records]);
     }
 
     /**
@@ -58,12 +80,12 @@ class SiteController extends ResourceController
      * Updates the entity with the validated data
      *
      * @param SiteRequest $request
-     * @param Site $model
+     * @param Site $site
      * @return JsonResponse
      */
-    public function update(SiteRequest $request, Site $model): JsonResponse
+    public function update(SiteRequest $request, Site $site): JsonResponse
     {
-        $updated = $model->update($request->validated());
+        $updated = $site->update($request->validated());
 
         // TODO: Sync site settings
 
@@ -73,12 +95,12 @@ class SiteController extends ResourceController
     /**
      * Deletes the entity
      *
-     * @param Site $model
+     * @param Site $site
      * @return JsonResponse
      * @throws Exception
      */
-    public function destroy(Site $model): JsonResponse
+    public function destroy(Site $site): JsonResponse
     {
-        return $this->respondWithBool($model->delete());
+        return $this->respondWithBool($site->delete());
     }
 }

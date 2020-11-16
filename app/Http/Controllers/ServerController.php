@@ -27,18 +27,30 @@ class ServerController extends ResourceController
     }
 
     /**
-     * Returns a JSON response for the single entity
+     * Returns a JSON response for an id => name representation of the entities records
      *
-     * @param Server $model
      * @return JsonResponse
      */
-    public function show(Server $model): JsonResponse
+    public function list(): JsonResponse
+    {
+        $records = Server::query()->pluck('name', 'id');
+
+        return response()->json(['servers' => $records]);
+    }
+
+    /**
+     * Returns a JSON response for the single entity
+     *
+     * @param Server $server
+     * @return JsonResponse
+     */
+    public function show(Server $server): JsonResponse
     {
         ServerResource::withoutWrapping();
 
         return response()->json([
-            'server' => ServerResource::make($model),
-            'settings' => SettingValueResource::collection($model->settings),
+            'server' => ServerResource::make($server),
+            'settings' => SettingValueResource::collection($server->settings),
         ]);
     }
 
@@ -61,12 +73,12 @@ class ServerController extends ResourceController
      * Updates the entity with the validated data
      *
      * @param ServerRequest $request
-     * @param Server $model
+     * @param Server $server
      * @return JsonResponse
      */
-    public function update(ServerRequest $request, Server $model): JsonResponse
+    public function update(ServerRequest $request, Server $server): JsonResponse
     {
-        $updated = $model->update($request->validated());
+        $updated = $server->update($request->validated());
 
         // TODO: Sync server global settings
 
@@ -76,12 +88,12 @@ class ServerController extends ResourceController
     /**
      * Deletes the entity
      *
-     * @param Server $model
+     * @param Server $server
      * @return JsonResponse
      * @throws Exception
      */
-    public function destroy(Server $model): JsonResponse
+    public function destroy(Server $server): JsonResponse
     {
-        return $this->respondWithBool($model->delete());
+        return $this->respondWithBool($server->delete());
     }
 }

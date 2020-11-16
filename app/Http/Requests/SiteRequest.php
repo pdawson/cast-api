@@ -42,6 +42,9 @@ class SiteRequest extends FormRequest
                     ->ignore($this->site),
             ],
             'active' => 'sometimes|boolean',
+            'settings' => 'sometimes|object',
+            'settings.*.id' => 'required|exists:settings,id',
+            'settings.*.value' => 'sometimes',
         ];
     }
 }

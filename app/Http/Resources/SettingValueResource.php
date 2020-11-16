@@ -17,8 +17,11 @@ class SettingValueResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'value' => $this->pivot->value,
+        ];
     }
 }

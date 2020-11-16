@@ -17,9 +17,15 @@ class CreateSettingValuesTable extends Migration
     {
         Schema::create('setting_values', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('setting_id');
             $table->morphs('entity');
             $table->text('value');
             $table->timestamps();
+
+            $table->foreign('setting_id')
+                ->references('id')
+                ->on('settings')
+                ->cascadeOnDelete();
         });
     }
 
