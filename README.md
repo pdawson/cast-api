@@ -1,61 +1,80 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Cast
+## Configuration Manager for NGINX
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> NOTE: This project is heavily WIP and not yet released
 
-## About Laravel
+### Installation
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The server where cast is hosted is generally setup in the same way as a regular Laravel application.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The servers that are to be managed by cast do need some additional setup (the `cast` user; acts as a bridge between the API and the server itself).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+#### Setup the API
 
-## Learning Laravel
+Installation of the API is the same as any other laravel application.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```shell script
+cd /var/www
+git clone <this repo> cast
+cd cast
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+composer install
+php artisan key:generate
 
-## Laravel Sponsors
+cp .env.example .env
+vi .env
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+php artisan migrate
+php artisan db:seed
+```
 
-### Premium Partners
+#### Server Setup
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
+##### Setting up the Cast User
 
-## Contributing
+Create a new user on the server called `cast` (configurable in `CAST_USER` environment property).
+```shell script
+sudo adduser cast
+sudo usermod -aG www-data cast
+sudo chfn -o umask=022 cast
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Ensure the `www-data` group can edit files in `/etc/nginx`
+```shell script
+sudo chmod g+s /etc/nginx
+sudo setfacl -Rdm group:www-data:rwx /etc/nginx
+```
 
-## Code of Conduct
+Enable the cast user special sudo privileges (to restart/reload nginx, test nginx configuration and run certbot for hosts).
+```shell script
+sudo visudo
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Add the following under 'User privilege specification'. (The NGINX / Certbot paths may need updating depending on your system configuration).
+```shell script
+cast    ALL=NOPASSWD: /bin/systemctl restart nginx.service
+cast    ALL=NOPASSWD: /bin/systemctl reload nginx.service
+cast    ALL=NOPASSWD: /usr/sbin/nginx
+cast    ALL=NOPASSWD: /usr/bin/certbot
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Update the `CAST_PRIVATE_KEY` environment property to the location on the server (where cast is hosted) that contains the ssh key file.
 
-## License
+> For the initial setup of cast; create this key in a location on the server with `ssh-keygen -t rsa`. This will be added to all servers that cast manages and allows login for the cast user
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+Add the public key (from the key created for cast above) to the authorized keys file on the server
+
+```shell script
+vi ~/.ssh/authorized_keys
+ssh-rsa {{YOUR_KEY}} cast.host.local
+```
+
+This allows cast to login as the cast user through SSH.
+
+#### Setup the Nuxt Frontend
+
+The Nuxt Frontend is in a separate repository; installation instructions for that can be found there.

@@ -39,6 +39,15 @@ class CreateSitesTable extends Migration
             // Is the site active on the domain?
             $table->boolean('active')->default(false);
 
+            // Has a www. subdomain
+            $table->boolean('subdomain_active')->default(true);
+
+            // Is letsencrypt enabled for this domain?
+            $table->boolean('letsencrypt_active')->default(true);
+
+            // Has a letsencrypt certifcate been installed
+            $table->boolean('letsencrypt_installed')->default(false);
+
             $table->timestamps();
             $table->softDeletes();
 

@@ -17,7 +17,7 @@ class ServerSeeder extends Seeder
     public function run(): void
     {
         $this->createServer('Development', 'pauld.dev', '/var/www');
-        $this->createServer('Production', 'pauldawson.me', '/var/www');
+        //$this->createServer('Production', 'pauldawson.me', '/var/www');
     }
 
     /**
