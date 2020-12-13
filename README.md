@@ -78,3 +78,5 @@ This allows cast to login as the cast user through SSH.
 #### Setup the Nuxt Frontend
 
 The Nuxt Frontend is in a separate repository; installation instructions for that can be found there.
+
+[GitHub Repository](https://github.com/pdawson/cast-frontend)
